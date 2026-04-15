@@ -10,18 +10,61 @@ provider:
   # https://www.serverless.com/framework/docs/providers/aws/guide/domains
   # domain: api.example.com
 
+# Auth api endpoints
 functions:
-  health:
-    handler: app/handler.Health
-    events:
-      - httpApi:
-          path: /
-          method: get
   signup:
     handler: app/handler.Signup
     events:
       - httpApi:
           path: /signup
+          method: post
+  login:
+    handler: app/handler.Login
+    events:
+      - httpApi:
+          path: /login
+          method: post
+  verify:
+    handler: app/handler.Verify
+    events:
+      - httpApi:
+          path: /verify
+          method: post
+  profile:
+    handler: app/handler.Profile
+    events:
+      - httpApi:
+          path: /user
+          method: post
+      - httpApi:
+          path: /user
+          method: put
+      - httpApi:
+          path: /user
+          method: get
+  cart:
+    handler: app/handler.Cart
+    events:
+      - httpApi:
+          path: /cart
+          method: post
+      - httpApi:
+          path: /cart
+          method: put
+      - httpApi:
+          path: /cart
+          method: get
+  account:
+    handler: app/handler.Account
+    events:
+      - httpApi:
+          path: /account
+          method: post
+      - httpApi:
+          path: /account
+          method: put
+      - httpApi:
+          path: /account
           method: get
 
 plugins:
