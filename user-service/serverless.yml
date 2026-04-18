@@ -6,6 +6,11 @@ service: user-service
 provider:
   name: aws
   runtime: nodejs20.x
+  versionFunctions: false
+  stage: "dev"
+  region: ap-south-1
+  httpApi:
+    cors: true
   # Uncomment to easily set up a custom domain. Read the docs for more details:
   # https://www.serverless.com/framework/docs/providers/aws/guide/domains
   # domain: api.example.com

@@ -29,13 +29,9 @@ serverless deploy
 After running deploy, you should see output similar to:
 
 ```
-Deploying "serverless-http-api" to stage "dev" (us-east-1)
+✔ Service deployed successfully
 
-✔ Service deployed to stack serverless-http-api-dev (91s)
-
-endpoint: GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
-functions:
-  hello: serverless-http-api-dev-hello (1.6 kB)
+endpoint: https://3nzi1k9u9j.execute-api.ap-south-1.amazonaws.com
 ```
 
 _Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [HTTP API (API Gateway V2) event docs](https://www.serverless.com/framework/docs/providers/aws/events/http-api).
@@ -45,7 +41,7 @@ _Note_: In current form, after deployment, your API is public and can be invoked
 After successful deployment, you can call the created application via HTTP:
 
 ```
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/
+curl https://3nzi1k9u9j.execute-api.ap-south-1.amazonaws.com
 ```
 
 Which should result in response similar to:
