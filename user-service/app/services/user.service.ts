@@ -1,7 +1,10 @@
 import { APIGatewayProxyEventV2 } from "aws-lambda";
+import { plainToClass } from "class-transformer";
+import { SignupDTO } from "models/dto/signup.dto";
 import { UserRepository } from "repositories/user.repository";
 import { autoInjectable } from "tsyringe";
-import { SuccessResponse } from "utilities/response";
+import { AppValidationError } from "utilities/errors";
+import { ErrorResponse, SuccessResponse } from "utilities/response";
 
 @autoInjectable()
 export class UserService {
@@ -13,12 +16,38 @@ export class UserService {
 
     // Signup, Login and Verify
     async CreateUser(event : APIGatewayProxyEventV2) {
-        const body = event.body;
-        console.log(body);
+        const SignupBody = event.body;
+        
+        const input = plainToClass(
+            SignupDTO,
+            SignupBody
+        );
 
-        await this.repository.CreateUserOperation();
+        const validationError = await AppValidationError(input);
+
+        if(validationError) {
+            return ErrorResponse(
+                400,
+                validationError
+            );
+        }
+
+        const salt = "";
+
+        const hashedPassword = "";
+        
+        const data = await this.repository.CreateAccount({
+                email : input.email,
+                password : hashedPassword,
+                phone : input.phone,
+                userType : "BUYER",
+                salt : salt
+            }
+        );
+
+
         return SuccessResponse({
-            message : "Successfully created"
+            data
         });
     }
 
