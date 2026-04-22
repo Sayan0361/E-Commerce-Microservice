@@ -4,6 +4,7 @@ import { SignupDTO } from "models/dto/signup.dto";
 import { UserRepository } from "repositories/user.repository";
 import { autoInjectable } from "tsyringe";
 import { AppValidationError } from "utilities/errors";
+import { GetHashedPassword, GetSalt } from "utilities/password";
 import { ErrorResponse, SuccessResponse } from "utilities/response";
 
 @autoInjectable()
@@ -32,9 +33,12 @@ export class UserService {
             );
         }
 
-        const salt = "";
+        const salt = await GetSalt();
 
-        const hashedPassword = "";
+        const hashedPassword = await GetHashedPassword(
+            input.password,
+            salt
+        );
         
         const data = await this.repository.CreateAccount({
                 email : input.email,

@@ -1,4 +1,5 @@
-import { UserModel } from "models/dto/user.model";
+import { UserModel } from "models/user.model";
+
 
 export class UserRepository {
     constructor() {
@@ -13,5 +14,12 @@ export class UserRepository {
         userType
     } : UserModel) {
         
+        console.log(
+            email,
+            password,
+            salt,
+            phone,
+            userType
+        );
     }
 }
