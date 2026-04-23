@@ -1,3 +1,4 @@
+import "../boostrap";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { PaymentService } from "services/payment.service";
 import { ErrorResponse } from "utilities/response";

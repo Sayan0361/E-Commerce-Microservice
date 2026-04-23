@@ -2,57 +2,58 @@ import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { plainToClass } from "class-transformer";
 import { SignupDTO } from "models/dto/signup.dto";
 import { UserRepository } from "repositories/user.repository";
-import { autoInjectable } from "tsyringe";
+import { injectable } from "tsyringe";
 import { AppValidationError } from "utilities/errors";
 import { GetHashedPassword, GetSalt } from "utilities/password";
 import { ErrorResponse, SuccessResponse } from "utilities/response";
 
-@autoInjectable()
+@injectable()
 export class UserService {
     // Dependency injection : Don’t create your dependencies yourself, let something else provide them.
-    repository: UserRepository;
-    constructor(repository : UserRepository) {
-        this.repository = repository;
-    }
-
+    constructor(private repository: UserRepository) {}
     // Signup, Login and Verify
     async CreateUser(event : APIGatewayProxyEventV2) {
-        const SignupBody = event.body;
-        
-        const input = plainToClass(
-            SignupDTO,
-            SignupBody
-        );
-
-        const validationError = await AppValidationError(input);
-
-        if(validationError) {
-            return ErrorResponse(
-                400,
-                validationError
+        try {
+            const input = plainToClass(
+                SignupDTO,
+                event.body
             );
-        }
 
-        const salt = await GetSalt();
+            const validationError = await AppValidationError(input);
 
-        const hashedPassword = await GetHashedPassword(
-            input.password,
-            salt
-        );
-        
-        const data = await this.repository.CreateAccount({
-                email : input.email,
-                password : hashedPassword,
-                phone : input.phone,
-                userType : "BUYER",
-                salt : salt
+            if(validationError) {
+                return ErrorResponse(
+                    400,
+                    validationError
+                );
             }
-        );
+
+            const salt = await GetSalt();
+
+            const hashedPassword = await GetHashedPassword(
+                input.password,
+                salt
+            );
+            
+            const data = await this.repository.CreateAccount({
+                    phone : input.phone,
+                    email : input.email,
+                    password : hashedPassword,
+                    salt : salt,
+                    userType : "BUYER"
+                }
+            );
 
 
-        return SuccessResponse({
-            data
-        });
+            return SuccessResponse({
+                data
+            });
+        }
+        catch(error) {
+            console.log("Error from Create User : ", error);
+            return ErrorResponse(500, "Internal server error");
+        }
+        
     }
 
     async UserLogin(event : APIGatewayProxyEventV2) {

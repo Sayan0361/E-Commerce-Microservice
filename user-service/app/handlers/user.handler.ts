@@ -1,3 +1,4 @@
+import "../boostrap";
 import middy from "@middy/core";
 import bodyParser from "@middy/http-json-body-parser";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
@@ -8,20 +9,23 @@ import { container } from "tsyringe";
 // So u dont need to do : 
 // const repo = new UserRepository();
 // const userService = new UserService(repo);
-const userService = container.resolve(UserService);
+// const userService = container.resolve(UserService);
 
 
 // middy -> Express-style middleware for Lambda
 export const Signup = middy((event : APIGatewayProxyEventV2) => {
+    const userService = container.resolve(UserService);
     return userService.CreateUser(event);
 }).use(
     bodyParser()
 )
 
 export const Login = (event : APIGatewayProxyEventV2) => {
+    const userService = container.resolve(UserService);
     return userService.UserLogin(event);
 }
 
 export const Verify = (event : APIGatewayProxyEventV2) => {
+    const userService = container.resolve(UserService);
     return userService.VerifyUser(event);
 }
