@@ -2,7 +2,7 @@ import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { plainToClass } from "class-transformer";
 import { SignupDTO } from "models/dto/signup.dto";
 import { UserRepository } from "repositories/user.repository";
-import { injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { AppValidationError } from "utilities/errors";
 import { GetHashedPassword, GetSalt } from "utilities/password";
 import { ErrorResponse, SuccessResponse } from "utilities/response";
@@ -10,7 +10,9 @@ import { ErrorResponse, SuccessResponse } from "utilities/response";
 @injectable()
 export class UserService {
     // Dependency injection : Don’t create your dependencies yourself, let something else provide them.
-    constructor(private repository: UserRepository) {}
+    constructor(
+        @inject(UserRepository) private repository: UserRepository
+    ) {}
     // Signup, Login and Verify
     async CreateUser(event : APIGatewayProxyEventV2) {
         try {

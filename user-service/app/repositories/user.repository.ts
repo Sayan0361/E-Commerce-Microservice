@@ -4,7 +4,6 @@ import { injectable } from "tsyringe";
 
 @injectable()
 export class UserRepository {
-
     async CreateAccount({
         phone,
         email,

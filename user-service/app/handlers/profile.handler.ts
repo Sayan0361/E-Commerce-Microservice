@@ -1,4 +1,4 @@
-import "../boostrap";
+import "reflect-metadata";
 import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { ProfileService } from "services/profile.service";
 import { ErrorResponse } from "utilities/response";

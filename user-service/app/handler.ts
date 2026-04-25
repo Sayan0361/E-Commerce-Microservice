@@ -4,7 +4,7 @@
 
 // reflect-metadata stores hidden metadata like:
 // UserService → depends on UserRepository
-
+import "dotenv/config";
 import "reflect-metadata";
 
 export * from "./handlers/user.handler";
