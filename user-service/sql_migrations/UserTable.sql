@@ -1,9 +1,9 @@
-CREATE TABLE "users" (
-    "user_id" bigserial PRIMARY KEY,
-    "phone" varchar NOT NULL,
-    "email" varchar NOT NULL,
-    "password" varchar NOT NULL,
-    "salt" varchar NOT NULL,
-    "user_type" varchar NOT NULL,
-    "created_at" timestamp NOT NULL DEFAULT(NOW())
+CREATE TABLE users (
+    user_id BIGSERIAL PRIMARY KEY,
+    phone VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR NOT NULL,
+    salt VARCHAR NOT NULL,
+    user_type VARCHAR NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );

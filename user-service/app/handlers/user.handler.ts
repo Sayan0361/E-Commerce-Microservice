@@ -9,23 +9,61 @@ import { container } from "tsyringe";
 // So u dont need to do : 
 // const repo = new UserRepository();
 // const userService = new UserService(repo);
-//const userService = container.resolve(UserService);
+// const userService = container.resolve(UserService);
 
 
 // middy -> Express-style middleware for Lambda
-export const Signup = middy((event : APIGatewayProxyEventV2) => {
-    const userService = container.resolve(UserService);
-    return userService.CreateUser(event);
-}).use(
-    bodyParser()
-)
+const withService = <T>(
+    fn: (service: UserService, event: APIGatewayProxyEventV2) => Promise<T>
+) => {
+    return middy(async (event: APIGatewayProxyEventV2) => {
+        const service = container.resolve(UserService);
 
-export const Login = (event : APIGatewayProxyEventV2) => {
-    const userService = container.resolve(UserService);
-    return userService.UserLogin(event);
-}
+        try {
+            return await fn(service, event);
+        } catch (error) {
+            console.error("Handler error:", error);
 
-export const Verify = (event : APIGatewayProxyEventV2) => {
-    const userService = container.resolve(UserService);
-    return userService.VerifyUser(event);
-}
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ message: "Internal server error" })
+            };
+        }
+    }).use(bodyParser());
+};
+
+const methodRouter = <T>(
+    service: UserService,
+    event: APIGatewayProxyEventV2,
+    routes: Record<string, (event: APIGatewayProxyEventV2) => Promise<T>>
+) => {
+    const method = event.requestContext.http.method;
+
+    const handler = routes[method];
+
+    if (!handler) {
+        return Promise.resolve({
+            statusCode: 405,
+            body: JSON.stringify({ message: "Method not allowed" })
+        });
+    }
+
+    return handler(event);
+};
+
+export const Signup = withService((service, event) =>
+    service.CreateUser(event)
+);
+
+export const Login = withService((service, event) =>
+    service.UserLogin(event)
+);
+
+// if method is get -> GetVerificationToken
+// if method is post -> VerifyUser
+export const Verify = withService((service, event) =>
+    methodRouter(service, event, {
+        GET: service.GetVerificationToken.bind(service),
+        POST: service.VerifyUser.bind(service),
+    })
+);
