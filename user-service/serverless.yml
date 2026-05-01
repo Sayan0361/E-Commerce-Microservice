@@ -11,9 +11,6 @@ provider:
   region: ap-south-1
   httpApi:
     cors: true
-    throttling:
-      burstLimit: 10
-      rateLimit: 3
 
   environment:
     AWS_REGION: ap-south-1

@@ -9,7 +9,9 @@ export class UserRepository {
         email,
         password,
         salt,
-        userType
+        user_type,
+        first_name,
+        last_name
     }: UserModel) {
 
         const query = `
@@ -18,13 +20,23 @@ export class UserRepository {
                 email,
                 password,
                 salt,
-                user_type
+                user_type,
+                first_name,
+                last_name
             )
-            VALUES($1, $2, $3, $4, $5)
+            VALUES($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
         `;
 
-        const values = [phone, email, password, salt, userType];
+        const values = [
+            phone,
+            email,
+            password,
+            salt,
+            user_type,
+            first_name,
+            last_name
+        ];
 
         try {
             const result = await pool.query(query, values);
@@ -47,13 +59,15 @@ export class UserRepository {
         }
     }
 
-    async FindAccountByEmail(email : string) {
+    async FindAccountByEmail(email: string) {
         const query = `
             SELECT 
                 user_id,
                 email,
                 password,
                 phone,
+                verification_code,
+                expiry,
                 salt
             FROM users
             WHERE 
@@ -76,5 +90,54 @@ export class UserRepository {
 
             throw err;
         }
+    }
+
+    async UpdateVerificationCode(
+        userId: string,
+        code: string,
+        expiry: Date
+    ) {
+        const query = `
+            UPDATE users 
+            SET 
+                verification_code = $1,
+                expiry = $2
+            WHERE user_id = $3
+            AND verified = FALSE
+            RETURNING *
+        `;
+
+        const values = [code, expiry, userId];
+
+        const result = await pool.query(query, values);
+
+        if (!result.rows.length) {
+            throw new Error("USER_ALREADY_VERIFIED");
+        }
+
+        return result.rows[0] as UserModel;
+    }
+
+    async UpdateVerifyUser(
+        userId: string
+    ) {
+        const query = `
+            UPDATE users 
+            SET 
+                verified = TRUE
+            WHERE user_id = $1
+            AND verified = FALSE
+            RETURNING *
+        `;
+
+        const values = [userId];
+
+        const result = await pool.query(query, values);
+
+        if (!result.rows.length) {
+            throw new Error("USER_ALREADY_VERIFIED");
+        }
+
+        return result.rows[0] as UserModel;
     }
 }

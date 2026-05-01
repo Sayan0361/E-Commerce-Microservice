@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
 import { plainToClass } from "class-transformer";
 import { AppValidationError } from "utilities/errors";
-import { ErrorResponse } from "utilities/response";
 import jwt from "jsonwebtoken";
 import { UserModel } from "models/user.model";
+import dayjs from "dayjs";
 
 /* PASSWORD UTILS */
 export const GetSalt = async () => {
@@ -106,49 +106,15 @@ export const validateDTO = async <T>(
     return input;
 };
 
-/* ERROR HANDLER */
-export const handleUserError = (error: unknown) => {
-    console.error("Service error:", error);
-
-    if (error instanceof Error) {
-        switch (error.message) {
-
-            /* -------- AUTH / TOKEN -------- */
-            case "TOKEN_MISSING":
-                return ErrorResponse(401, "Authorization token missing");
-
-            case "INVALID_TOKEN_FORMAT":
-                return ErrorResponse(401, "Invalid token format");
-
-            case "INVALID_TOKEN":
-                return ErrorResponse(401, "Invalid token");
-
-            case "TOKEN_EXPIRED":
-                return ErrorResponse(401, "Token expired");
-
-
-            /* -------- USER -------- */
-            case "USER_ALREADY_EXISTS":
-                return ErrorResponse(409, "User already exists");
-
-            case "USER_NOT_FOUND":
-                return ErrorResponse(404, "User not found");
-
-
-            /* -------- VALIDATION -------- */
-            case "INVALID_BODY":
-                return ErrorResponse(400, "Invalid request body");
-
-            case "VALIDATION_ERROR":
-                return ErrorResponse(400, "Validation failed");
-
-
-            /* -------- CONFIG -------- */
-            case "JWT_SECRET_NOT_CONFIGURED":
-                return ErrorResponse(500, "Server configuration error");
-        }
-    }
-
-    /* -------- FALLBACK -------- */
-    return ErrorResponse(500, "Internal server error");
-};
+export const timeDifference = (
+    fromDate : string,
+    toDate : string,
+    type : "d" | "h" | "m"
+) => {
+    const startDate = dayjs(fromDate);
+    return startDate.diff(
+        dayjs(toDate),
+        type,
+        true
+    );
+}

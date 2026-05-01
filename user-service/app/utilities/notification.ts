@@ -3,8 +3,8 @@ import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
 const sns = new SNSClient({ region: "ap-south-1" });
 
 export const GenerateAccessCode = () => {
-    // generate a random 5-digit code
-    const code = Math.floor(10000 + Math.random() * 90000);
+    // generate a random 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000);
     let expiry = new Date();
     // expiry set to current time + 10 minutes
     expiry.setTime(new Date().getTime() + 10 * 60 * 1000);

@@ -9,8 +9,9 @@ CREATE TABLE users (
     first_name VARCHAR,
     last_name VARCHAR,
     profile_pic TEXT,
-    verification_code INTEGER,
+    verification_code VARCHAR(6),
     expiry TIMESTAMP,
+    verified BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

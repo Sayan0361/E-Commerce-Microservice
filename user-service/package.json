@@ -9,9 +9,9 @@
     "deploy": "serverless deploy --verbose",
     "start:db": "docker compose up -d",
     "stop:db": "docker compose down",
-    "migrate:create": "db-migrate create",
-    "migrate:up": "db-migrate up",
-    "migrate:down": "db-migrate down"
+    "migrate:up": "dotenv db-migrate up",
+    "migrate:down": "dotenv db-migrate down",
+    "migrate:create": "dotenv db-migrate create"
   },
   "keywords": [],
   "author": "",
@@ -35,8 +35,10 @@
     "bcryptjs": "^3.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "dayjs": "^1.11.20",
     "db-migrate-pg": "^1.5.2",
     "dotenv": "^17.4.2",
+    "dotenv-cli": "^11.0.0",
     "jsonwebtoken": "^9.0.3",
     "libphonenumber-js": "^1.12.42",
     "pg": "^8.20.0",
