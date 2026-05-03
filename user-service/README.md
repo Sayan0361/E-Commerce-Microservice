@@ -6,4 +6,4 @@ Serverless user-service built using AWS Lambda and API Gateway.
 
 ## Getting Started
 
-See [StartUp.md](./StartUp.md) for setup and usage instructions.
+See [StartUP.md](./StartUP.md) for setup and usage instructions.
