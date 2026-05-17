@@ -1,84 +1,32 @@
 const formatResponse = (
     statusCode: number,
     message: string,
-    data: unknown
+    data?: unknown
 ) => {
-    if (data) {
-        return {
-            statusCode,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-            },
-            body: JSON.stringify({
-                message,
-                data
-            })
-        }
-    }
-    else {
-        return {
-            statusCode,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-            },
-            body: JSON.stringify({
-                message
-            })
-        }
-    }
+    return {
+        statusCode,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            success: statusCode < 400,
+            message,
+            ...(data ? { data } : {})
+        }),
+    };
 };
 
 export const SuccessResponse = (
-    data: object
+    data?: unknown,
+    message: string = "success"
 ) => {
-    return formatResponse(
-        200,
-        "success",
-        data
-    );
+    return formatResponse(200, message, data);
 };
 
 export const ErrorResponse = (
-    code: number = 1000,
-    error: unknown
+    statusCode: number,
+    message: string,
+    data?: unknown
 ) => {
-    if (Array.isArray(error)) {
-        const messages = error.map(err => {
-            const constraints = err.constraints;
-            return constraints ? String(Object.values(constraints)[0]) : "Something went wrong!";
-        });
-
-        return formatResponse(
-            code, 
-            messages[0], 
-            messages
-        );
-    }
-    else {
-        return formatResponse(
-            code,
-            `${error}`,
-            error
-        );
-    }
+    return formatResponse(statusCode, message, data);
 };
-
-/**
- * 
- * 
- * When error is an array of objects
-[
-    {
-        property: "email",
-        constraints: {
-        isEmail: "email must be a valid email address"
-        }
-    },
-    {
-        property: "password",
-        constraints: {
-        minLength: "password must be at least 6 characters"
-        }
-    }
-]
- */

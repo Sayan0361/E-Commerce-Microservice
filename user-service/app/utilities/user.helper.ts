@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
-import { plainToClass } from "class-transformer";
-import { AppValidationError } from "utilities/errors";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+import { RequestValidationError } from "utilities/errors/validation.error";
 import jwt from "jsonwebtoken";
 import { UserModel } from "models/user.model";
 import dayjs from "dayjs";
@@ -38,7 +39,7 @@ export const GetToken = (user: UserModel) => {
             user_id: user.user_id,
             email: user.email,
             phone: user.phone,
-            userType: user.userType
+            user_type: user.user_type
         },
         secret,
         { expiresIn: "30d" }
@@ -85,22 +86,16 @@ export const VerifyToken = async (
 
 /* VALIDATION  */
 export const validateDTO = async <T>(
-    dto: new () => T,
+    dtoClass: new () => T,
     body: unknown
 ): Promise<T> => {
-    if (!body) {
-        throw new Error("INVALID_BODY");
-    }
 
-    const parsed =
-        typeof body === "string" ? JSON.parse(body) : body;
+    const input = plainToInstance(dtoClass, body);
 
-    const input = plainToClass(dto, parsed);
+    const errors = await validate(input as object);
 
-    const error = await AppValidationError(input);
-
-    if (error) {
-        throw new Error("VALIDATION_ERROR");
+    if (errors.length > 0) {
+        throw new RequestValidationError(errors);
     }
 
     return input;

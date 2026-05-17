@@ -1,6 +1,14 @@
 import { UserModel } from "models/user.model";
 import { pool } from "utilities/database.client";
 import { injectable } from "tsyringe";
+import {
+    UserAlreadyExistsError,
+    UserAlreadyVerifiedError,
+    UserCreationFailedError,
+    UserNotFoundError,
+    UserUpdateFailedError
+} from "utilities/errors/errors";
+
 
 @injectable()
 export class UserRepository {
@@ -42,7 +50,7 @@ export class UserRepository {
             const result = await pool.query(query, values);
 
             if (!result.rows.length) {
-                throw new Error("User creation failed");
+                throw new UserCreationFailedError();
             }
 
             return result.rows[0] as UserModel;
@@ -52,7 +60,7 @@ export class UserRepository {
 
             // Handle unique constraint for duplicate email and phone
             if (err.code === "23505") {
-                throw new Error("USER_ALREADY_EXISTS");
+                throw new UserAlreadyExistsError();
             }
 
             throw err;
@@ -80,7 +88,7 @@ export class UserRepository {
             const result = await pool.query(query, values);
 
             if (result.rows.length < 1) {
-                throw new Error("USER_NOT_FOUND");
+                throw new UserNotFoundError();
             }
 
             return result.rows[0];
@@ -93,7 +101,7 @@ export class UserRepository {
     }
 
     async UpdateVerificationCode(
-        userId: string,
+        user_id: number,
         code: string,
         expiry: Date
     ) {
@@ -107,19 +115,19 @@ export class UserRepository {
             RETURNING *
         `;
 
-        const values = [code, expiry, userId];
+        const values = [code, expiry, user_id];
 
         const result = await pool.query(query, values);
 
         if (!result.rows.length) {
-            throw new Error("USER_ALREADY_VERIFIED");
+            throw new UserAlreadyVerifiedError();
         }
 
         return result.rows[0] as UserModel;
     }
 
     async UpdateVerifyUser(
-        userId: string
+        user_id: number
     ) {
         const query = `
             UPDATE users 
@@ -130,12 +138,12 @@ export class UserRepository {
             RETURNING *
         `;
 
-        const values = [userId];
+        const values = [user_id];
 
         const result = await pool.query(query, values);
 
         if (!result.rows.length) {
-            throw new Error("USER_ALREADY_VERIFIED");
+            throw new UserAlreadyVerifiedError();
         }
 
         return result.rows[0] as UserModel;

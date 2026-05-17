@@ -11,7 +11,7 @@
     "stop:db": "docker compose down",
     "migrate:up": "dotenv db-migrate up",
     "migrate:down": "dotenv db-migrate down",
-    "migrate:create": "dotenv db-migrate create"
+    "migrate:create": "dotenv -- db-migrate create"
   },
   "keywords": [],
   "author": "",
